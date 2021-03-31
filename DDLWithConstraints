@@ -1,0 +1,202 @@
+create or replace table groupzones
+(
+	zone_id varchar(100) not null
+		primary key,
+	zone_location varchar(100) null
+);
+
+create or replace table person
+(
+	person_id int auto_increment
+		primary key,
+	first_name varchar(100) null,
+	last_name varchar(100) null,
+	DOB date null,
+	medicare_number varchar(100) null,
+	is_health_worker varchar(1) default 'N' null,
+	related_person_no int null
+);
+
+create or replace table daily_follow_up
+(
+	person_id int not null,
+	date_reported varchar(255) null,
+	time_reported varchar(255) null,
+	body_temperature double null,
+	constraint daily_follow_up_pk
+		unique (person_id, date_reported, time_reported),
+	constraint daily_follow_up_person_person_id_fk
+		foreign key (person_id) references person (person_id)
+);
+
+create or replace table diagnostic
+(
+	test_id int auto_increment,
+	person_id int null,
+	tested_by int not null,
+	performed_at varchar(40) not null,
+	test_date date null,
+	result_date date null,
+	result varchar(10) null,
+	primary key (test_id, performed_at, tested_by),
+	constraint diagnostic_person_person_id_fk
+		foreign key (person_id) references person (person_id)
+);
+
+create or replace table followup_details
+(
+	PERSON_ID int null,
+	DATE_REPORTED date null,
+	TIME_REPORTED varchar(255) null,
+	SYMPTOMS varchar(100) null,
+	constraint DAILY_FOLLOW_UP_pk
+		unique (PERSON_ID, DATE_REPORTED, TIME_REPORTED),
+	constraint followup_details_person_person_id_fk
+		foreign key (PERSON_ID) references person (person_id)
+);
+
+create or replace table messages
+(
+	Msg_ID int auto_increment,
+	Person_ID int null,
+	DateTime datetime default current_timestamp() null,
+	Email varchar(255) null,
+	Old_Alert_State varchar(55) null,
+	New_Alert_State varchar(55) null,
+	Message_Body varchar(4000) null,
+	Message_Category varchar(55) null,
+	constraint MESSAGES_pk
+		unique (Msg_ID, Person_ID),
+	constraint messages_person_person_id_fk
+		foreign key (Person_ID) references person (person_id)
+);
+
+create or replace table person_zones
+(
+	person_id int null,
+	zone_id varchar(100) null,
+	constraint person_zones_final_pk
+		unique (person_id, zone_id),
+	constraint person_zones_groupzones_zone_id_fk
+		foreign key (zone_id) references groupzones (zone_id),
+	constraint person_zones_person_person_id_fk
+		foreign key (person_id) references person (person_id)
+);
+
+create or replace table publichealthcenter
+(
+	facility_id varchar(40) not null
+		primary key,
+	facility_name varchar(100) null,
+	address varchar(100) null,
+	web_address varchar(100) null,
+	phone_number int null,
+	type varchar(100) null,
+	operating_zone varchar(100) null,
+	has_drive_through varchar(1) null,
+	constraint publichealthcenter_groupzones_zone_id_fk
+		foreign key (operating_zone) references groupzones (zone_id)
+);
+
+create or replace table region
+(
+	region_id int auto_increment
+		primary key,
+	region_name varchar(100) null,
+	current_active_alert varchar(55) default 'green' null
+);
+
+create or replace table alert_system
+(
+	ALERT_ID int auto_increment,
+	ALERT_DATE_TIME datetime default current_timestamp() null,
+	ALERT_TYPE varchar(55) null,
+	IS_ACTIVE varchar(1) null,
+	REGION_ID int null,
+	constraint ALERT_SYSTEM_pk
+		unique (ALERT_ID, REGION_ID),
+	constraint alert_system_region_region_id_fk
+		foreign key (REGION_ID) references region (region_id)
+);
+
+create or replace table city
+(
+	city_id int auto_increment
+		primary key,
+	city_name varchar(100) null,
+	region_id int null,
+	constraint city_region_region_id_fk
+		foreign key (region_id) references region (region_id)
+);
+
+create or replace table address
+(
+	address_id int auto_increment
+		primary key,
+	person_id int null,
+	street_address varchar(100) null,
+	email_address varchar(100) null,
+	province varchar(50) null,
+	postal_code varchar(10) null,
+	phone_number varchar(255) null,
+	city_id int null,
+	region_id int null,
+	constraint address_city_city_id_fk
+		foreign key (city_id) references city (city_id),
+	constraint address_person_person_id_fk
+		foreign key (person_id) references person (person_id),
+	constraint address_region_region_id_fk
+		foreign key (region_id) references region (region_id)
+);
+
+create or replace table relatives
+(
+	relative_id int auto_increment
+		primary key,
+	person_id int null,
+	relative int null,
+	constraint relatives_person_person_id_fk
+		foreign key (person_id) references person (person_id)
+);
+
+create or replace table timesheet
+(
+	person_id int null,
+	facility_id varchar(40) null,
+	shift_date date null,
+	start_time varchar(5) null,
+	end_time varchar(5) null,
+	constraint TimeSheet_pk
+		unique (person_id, facility_id, shift_date),
+	constraint timesheet_person_person_id_fk
+		foreign key (person_id) references person (person_id),
+	constraint timesheet_publichealthcenter_facility_id_fk
+		foreign key (facility_id) references publichealthcenter (facility_id)
+);
+
+create or replace table travel_history
+(
+	person_id int null,
+	zone_id varchar(100) null,
+	visited_date date null,
+	constraint travel_history_pk
+		unique (person_id, zone_id, visited_date),
+	constraint travel_history_groupzones_zone_id_fk
+		foreign key (zone_id) references groupzones (zone_id),
+	constraint travel_history_person_person_id_fk
+		foreign key (person_id) references person (person_id)
+);
+
+create or replace table users
+(
+	id int auto_increment
+		primary key,
+	username varchar(255) not null,
+	email varchar(255) null,
+	user_type varchar(255) null,
+	password varchar(255) not null,
+	created_at datetime default current_timestamp() null,
+	constraint users_username_uindex
+		unique (username)
+);
+
