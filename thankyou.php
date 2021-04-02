@@ -14,13 +14,13 @@
     echo '<div class="jumbotron text-center">';
     echo '<h1>Thank you.</h1>';
     echo '<p>The data has been successfully saved</p>';
-    echo '<p>press the button to return to the main page</p>';
+    echo '<p>press the button to log out</p>';
     echo  '</div>';
     echo '<form class="form-horizontal" action="index.php">';
     echo '<div class="form-group">';
     echo '<div class="col-sm-offset-2 col-sm-10">';
     echo '</form>';
 ?>
-    <a href="index.php" style="color: red;">Home</a>
+    <a href="index.php?logout='1'" style="color: red;">Log Out</a>
 </body>
 </html>

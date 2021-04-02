@@ -64,9 +64,9 @@ function generateRandomString($length = 10) {
 }
 
 function getRelatedPerson(){
-    global $db;
+    global $mysqli;
     $query = "SELECT Person_id,first_name,Last_name,phone_number,street_address from person_det_view";
-    $result = mysqli_query($db, $query);
+    $result = mysqli_query($mysqli, $query);
     $numRows=mysqli_num_rows($result);
     $regions = array();
     while ($row = $result->fetch_row()) {

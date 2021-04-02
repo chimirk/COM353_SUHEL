@@ -23,7 +23,7 @@ if (!isLoggedIn()) {
     <div class="jumbotron text-center">
         <h1>COVID-19 daily questionnaire</h1>
         <p>
-            Please fill out the questionnaire every day until the end of 14 days quaranteese period.
+            Please fill out the questionnaire every day until the end of 14 days quarantine period.
             It is important to fill out the questionnaire also in cases where you and are feeling well and do not experience any symptoms.
             This survey is anonymous and all data will be used solely for tracking the spread of the virus.
             You will not have any return of information from the answers you provide in the questionnaire.

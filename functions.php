@@ -2,7 +2,7 @@
 session_start();
 
 // connect to database
-$db = mysqli_connect('localhost', 'root', '', 'main_projectv1');
+$mysqli = mysqli_connect('localhost', 'root', '', 'main_projectv1');
 
 // variable declaration
 $username = "";
@@ -35,7 +35,7 @@ if(isset($_POST['cancel_red_adm_btn']))     {
 // REGISTER USER
 function register(){
     // call these variables with the global keyword to make them available in function
-    global $db, $errors, $username, $email;
+    global $mysqli, $errors, $username, $email;
 
     // receive all input values from the form. Call the e() function
     // defined below to escape form values
@@ -66,16 +66,16 @@ function register(){
             $user_type = e($_POST['user_type']);
             $query = "INSERT INTO users (username, email, user_type, password) 
 					  VALUES('$username', '$email', '$user_type', '$password')";
-            mysqli_query($db, $query);
+            mysqli_query($mysqli, $query);
             $_SESSION['success']  = "New user successfully created!!";
             header('location: home.php');
         }else{
             $query = "INSERT INTO users (username, email, user_type, password) 
 					  VALUES('$username', '$email', 'user', '$password')";
-            mysqli_query($db, $query);
+            mysqli_query($mysqli, $query);
 
             // get id of the created user
-            $logged_in_user_id = mysqli_insert_id($db);
+            $logged_in_user_id = mysqli_insert_id($mysqli);
 
             $_SESSION['user'] = getUserById($logged_in_user_id); // put logged in user in session
             $_SESSION['success']  = "You are now logged in";
@@ -91,18 +91,20 @@ function cancelAdmRegistration() {
 
 // return user array from their id
 function getUserById($id){
-    global $db;
-    $query = "SELECT * FROM users WHERE id=" . $id;
-    $result = mysqli_query($db, $query);
-
-    $user = mysqli_fetch_assoc($result);
-    return $user;
+    global $mysqli;
+    $query = "SELECT * FROM users WHERE id='$id'";
+    if ($mysqli->query($query) === TRUE) {
+        $result = $mysqli->query($query);
+        return $result->fetch_assoc();
+    }else{
+        echo "Error. cannot get any data";
+    }
 }
 
 // escape string
 function e($val){
-    global $db;
-    return mysqli_real_escape_string($db, trim($val));
+    global $mysqli;
+    return mysqli_real_escape_string($mysqli, trim($val));
 }
 
 function display_error() {
@@ -140,7 +142,7 @@ if (isset($_POST['login_btn'])) {
 
 // LOGIN USER
 function login(){
-    global $db, $username, $errors;
+    global $mysqli, $username, $errors;
 
     // grap form values
     $username = e($_POST['username']);
@@ -159,7 +161,7 @@ function login(){
         $password = md5($password);
 
         $query = "SELECT * FROM users WHERE username='$username' AND password='$password' LIMIT 1";
-        $results = mysqli_query($db, $query);
+        $results = mysqli_query($mysqli, $query);
 
         if (mysqli_num_rows($results) == 1) { // user found
             // check if user is admin or user
@@ -214,7 +216,7 @@ function cancelFollowUpForm()  {
 //PROCESS FOLLOW UP FORM
 function processFollowUp()
 {
-    global $db, $errors, $medicare_number, $current_date, $current_time, $body_temperature, $symptoms;
+    global $mysqli, $errors, $medicare_number, $current_date, $current_time, $body_temperature, $symptoms;
 
     // receive all input values from the form. Call the e() function
     // defined below to escape form values
@@ -237,7 +239,7 @@ function processFollowUp()
     if (count($errors) == 0) {
 
         $query = "SELECT person_id, medicare_number FROM person WHERE medicare_number = '$medicare_number'";
-        $result = $db->query($query);
+        $result = $mysqli->query($query);
 
         $person_id = "";
         if ($result->num_rows > 0) {
@@ -245,19 +247,19 @@ function processFollowUp()
                 $person_id = $row["person_id"];
             }
 
-            //put data into Symptoms Table
+            //put data into FOLLOWUP DETAILS Table
             foreach ($symptoms as $symptom) {
-                $query = $db->prepare("INSERT INTO symptoms (person_id, date_reported, time_reported, symptom) VALUES(?, ?, ?, ?)");
+                $query = $mysqli->prepare("INSERT INTO followup_details (PERSON_ID, DATE_REPORTED, TIME_REPORTED, SYMPTOMS) VALUES(?, ?, ?, ?)");
                 $query->bind_param('isss', $person_id, $current_date, $current_time, $symptom);
                 $query->execute();
             }
 
             //put data into Daily Follow-Up Table
-            $query = $db->prepare("INSERT INTO daily_follow_up (person_person_id, date_reported, time_reported, body_temperature) VALUES(?,?,?,?)");
+            $query = $mysqli->prepare("INSERT INTO daily_follow_up (PERSON_ID, DATE_REPORTED, TIME_REPORTED, BODY_TEMP) VALUES(?,?,?,?)");
             $query->bind_param('issd', $person_id, $current_date, $current_time, $body_temperature);
             $query->execute();
 
-            $db->close();
+            $mysqli->close();
             header('Location: thankyou.php');
         }
     }
@@ -270,14 +272,12 @@ if(isset($_GET['person'])){
 
 
 function displayTable($table_name){
-    global $db;
+    global $mysqli;
     $whereClause="1=1";
     $query = "SELECT * FROM {$table_name}";
 
-    $result = mysqli_query($db, $query);
-    $fields_num = mysqli_field_count($db);
-
-
+    $result = mysqli_query($mysqli, $query);
+    $fields_num = mysqli_field_count($mysqli);
 
     while (($row = $result->fetch_assoc()) !== null) {
         $data[] = $row;
@@ -322,17 +322,9 @@ function displayTable($table_name){
     }
 }
 
-
-   
     mysqli_free_result($result);
 }
 
-/*function add_edit_and_delete($row){
-    $link_address_edit = "edit_user.php?edit_person='1'";
-    $link_address_delete = "delete_user.php?delete_person='1'";
-    echo "<a href={$link_address_edit}>Edit</a>";
-    echo "<a href={$link_address_delete}>Delete</a>";
-}*/
 
 if(isset($_GET['person_person_id'])) {
     delete_person($_GET['person_person_id']);
@@ -342,11 +334,11 @@ function count_num_pkeys($table_name){
     
 
     
-    global $db;
+    global $mysqli;
     echo 'inside get PK';
     $query = "select COUNT(*) FROM PERSON";
   
-  $result = mysqli_query($db, $query);
+  $result = mysqli_query($mysqli, $query);
     
     if(!$result) {
         echo 'db failed';
@@ -368,9 +360,9 @@ function count_num_pkeys($table_name){
 }
 
 function getRegions(){
-    global $db;
+    global $mysqli;
     $query = "SELECT region_name,current_active_alert from region";
-    $result = mysqli_query($db, $query);
+    $result = mysqli_query($mysqli, $query);
     $numRows=mysqli_num_rows($result);
     $regions = array();
     while ($row = $result->fetch_row()) {
@@ -384,9 +376,9 @@ function getRegions(){
 
     function getBulkData($QueryToRun)
     {
-        global $db;
+        global $mysqli;
         $query = $QueryToRun;
-        $result = mysqli_query($db, $query);
+        $result = mysqli_query($mysqli, $query);
         //$numRows=mysqli_num_rows($result);
         $screenData = array();
         // while ($row = $result->fetch_assoc()) {
