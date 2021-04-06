@@ -19,7 +19,7 @@ $screenData=getBulkData($QueryToRun);
         </div>
         <div>
             <form id="new_schedule" class="form-horizontal" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-                <input type="hidden" name="person_id" value="<?php echo $screenData['person_id']?>">
+                <input type="hidden" name="person_id" value="<?php echo $q?>">
                 <!--<input type="hidden" name="facility_id" value="<?php /*echo $screenData['facility_id']*/?>">-->
                 <div class="form-group">
                     <label for="schedule_date">
@@ -32,7 +32,7 @@ $screenData=getBulkData($QueryToRun);
                         Choose Public Health Center
                     </label>
                     <select name="facility_name" id="facility_name" >
-                        <?php echo getPublicHealthCenters();
+                        <?php echo @getPublicHealthCenters();
                         ?>
                     </select>
                 </div>
@@ -47,16 +47,22 @@ $screenData=getBulkData($QueryToRun);
             <h4 style="text-transform: uppercase">
             <span class="badge badge-light">
                 Work Schedules of <?php
-                @$name = @$screenData['first_name']." ".@$screenData['last_name'];
-                echo @$name?></span>
+                if(isset($screenData['first_name']) AND isset($screenData['last_name'])) {
+                    $name = $screenData['first_name'] . " " . $screenData['last_name'];
+                    echo $name;
+                }
+                ?></span>
+
+
             </h4>
             <table class="table">
                 <?php
-                $q = $_GET['person_id'];
-                $QueryToRun="SELECT * FROM healthworker_det_schedule_view WHERE person_id='$q'";
-                $screenData=getBulkData($QueryToRun);
-                $table_name = $screenData['screenName']."_view";
-                displaySchedules($table_name);
+                //echo $q;
+                //$QueryToRun="SELECT * FROM `healthworker_det_schedule_view` WHERE `person_id`='$q'";
+                //$screenData=getBulkData($QueryToRun);
+                //echo $screenData['person_id'];
+                $table_name = 'healthworker_det_schedule_view';
+                displaySchedules($table_name, $q);
                 ?>
             </table>
         </div>
