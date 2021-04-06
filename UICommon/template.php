@@ -1,7 +1,7 @@
 
 <?php
 include('../functions.php') ;
-//include '../admin/admin_header.php' ;
+include '../admin/admin_header.php' ;
 
 
 ?>

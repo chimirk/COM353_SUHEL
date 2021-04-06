@@ -325,6 +325,44 @@ function displayTable($table_name){
     mysqli_free_result($result);
 }
 
+function displayTableByQuery($query)
+{
+    global $mysqli;
+
+    $result = mysqli_query($mysqli, $query);
+
+    $fields_num = mysqli_field_count($mysqli);
+
+    //echo "<h5>{$table_name}</h5>";
+    echo "<table class='table'>";
+
+    echo "<thead class='thead-light'>";
+    echo "<tr>";
+
+    // printing table headers
+    for ($i = 0; $i < $fields_num; $i++) {
+        $field = mysqli_fetch_field($result);
+        echo "<th>{$field->name}</th>";
+    }
+
+    echo "</tr>\n";
+    echo "</thead>";
+
+    // printing table rows
+    while ($row = mysqli_fetch_row($result)) {
+        echo "<tr>";
+
+        // $row is array... foreach( .. ) puts every element
+        // of $row to $cell variable
+        foreach ($row as $cell) {
+            echo "<td>$cell</td>";
+        }
+
+        echo "</tr>\n";
+    }
+    mysqli_free_result($result);
+}
+
 
 if(isset($_GET['person_person_id'])) {
     delete_person($_GET['person_person_id']);
@@ -379,15 +417,20 @@ function getRegions(){
         global $mysqli;
         $query = $QueryToRun;
         $result = mysqli_query($mysqli, $query);
+
         //$numRows=mysqli_num_rows($result);
+
         $screenData = array();
+
         // while ($row = $result->fetch_assoc()) {
         //$screenData=$row;
         //}
 
-        if (mysqli_num_rows($result) == 1) { // user found
+        $screenData = mysqli_fetch_assoc($result);
+
+        /*if (mysqli_num_rows($result) == 2) { // user found
             $screenData = mysqli_fetch_assoc($result);
-        }
+        }*/
         return $screenData;
     }
 
