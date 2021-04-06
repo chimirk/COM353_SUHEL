@@ -1,0 +1,9 @@
+create or replace table main_projectv1.work_schedule
+(
+	person_id int not null,
+	facility_id int not null,
+	schedule_date date not null,
+	schedule_start time null,
+	schedule_end time null,
+	primary key (person_id, facility_id, schedule_date)
+);
