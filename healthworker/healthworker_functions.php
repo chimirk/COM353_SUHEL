@@ -92,58 +92,46 @@ function create_new_schedule($person_id, $facility_name, $schedule_date)
 }
 
 
-function displaySchedules($table_name){
+function displaySchedules($table_name, $id){
     global $mysqli;
-    $query = "SELECT 
+
+    $query = "SELECT COUNT(*) AS RowCnt FROM $table_name";
+    $result = mysqli_query($mysqli, $query);
+
+    if($result != false) {
+
+        $query = "SELECT 
                     `schedule_date`     AS      `Shift Date`,
                     `schedule_start`    AS      `Shift START`,
                     `schedule_end`      AS      `Shift END`,
                     `facility_name`     AS      `Facility Name`,         
                     `person_id`, `facility_id`, `pkey1`, `pkey2`, `pkey3`, `screenName`
-FROM {$table_name}";
+                FROM {$table_name} 
+                WHERE `person_id` = '$id'";
 
-    $result = mysqli_query($mysqli, $query);
-    if($result == false) {display_error();}
+        $result = mysqli_query($mysqli, $query);
 
-    //$fields_num = mysqli_field_count($mysqli);
 
-    while (($row = $result->fetch_assoc()) !== null) {
-        $data[] = $row;
-    }
+        //$fields_num = mysqli_field_count($mysqli);
 
-    if ( @$data!==null) {
-        @$colNames = array_keys(reset($data));
-
-        echo "<table class='table'>";
-        echo "<thead>";
-
-        foreach ($colNames as $colName) {
-            if ($colName != "person_id") {
-                if ($colName != "facility_id") {
-                    if($colName != "pkey1") {
-                        if($colName != "pkey2"){
-                            if($colName != "pkey3") {
-                                if($colName != "screenName"){
-                                    echo "<th>$colName</th>";
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        while (($row = $result->fetch_assoc()) !== null) {
+            $data[] = $row;
         }
 
-        echo "</thead>";
-        foreach ($data as $row) {
-            echo "<tr>";
+        if (@$data !== null) {
+            @$colNames = array_keys(reset($data));
+
+            echo "<table class='table'>";
+            echo "<thead>";
+
             foreach ($colNames as $colName) {
                 if ($colName != "person_id") {
                     if ($colName != "facility_id") {
-                        if($colName != "pkey1") {
-                            if($colName != "pkey2"){
-                                if($colName != "pkey3"){
-                                    if($colName != "screenName"){
-                                        echo "<td>" . $row[$colName] . "</td>";
+                        if ($colName != "pkey1") {
+                            if ($colName != "pkey2") {
+                                if ($colName != "pkey3") {
+                                    if ($colName != "screenName") {
+                                        echo "<th>$colName</th>";
                                     }
                                 }
                             }
@@ -152,19 +140,45 @@ FROM {$table_name}";
                 }
             }
 
-            echo "<td><a href=" . @$row['screenName'] . "_view.php?" . @$row['pkey1'] . "&". $row['pkey2'] . "&" . @$row['pkey3'].">edit</a>";
+            echo "</thead>";
+            foreach ($data as $row) {
+                echo "<tr>";
+                foreach ($colNames as $colName) {
+                    if ($colName != "person_id") {
+                        if ($colName != "facility_id") {
+                            if ($colName != "pkey1") {
+                                if ($colName != "pkey2") {
+                                    if ($colName != "pkey3") {
+                                        if ($colName != "screenName") {
+                                            echo "<td>" . $row[$colName] . "</td>";
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
 
-            echo "</tr>";
+                echo "<td><a href=" . @$row['screenName'] . "_view.php?" . @$row['pkey1'] . "&" . $row['pkey2'] . "&" . @$row['pkey3'] . ">edit</a>";
+
+                echo "</tr>";
+            }
         }
-    }
 
-    mysqli_free_result($result);
-    $mysqli->close();
+        mysqli_free_result($result);
+        $mysqli->close();
+    }else{
+        echo "Nothing to display";
+    }
 }
 
 function displayWorkers($table_name){
     global $mysqli;
-    $query = "SELECT 
+    $query = "SELECT COUNT(*) AS RowCnt FROM $table_name";
+    $result = mysqli_query($mysqli, $query);
+
+    if($result != false) {
+        $query = "SELECT 
                 `person_id`         AS  `ID`,
                 `first_name`        AS  `First Name`, 
                 `last_name`         AS  `Last Name`,
@@ -172,46 +186,46 @@ function displayWorkers($table_name){
                 `pkey1`, `screenName`
 FROM {$table_name}";
 
-    $result = mysqli_query($mysqli, $query);
+        $result = mysqli_query($mysqli, $query);
 
-    while (($row = $result->fetch_assoc()) !== null) {
-        $data[] = $row;
-    }
+        while (($row = $result->fetch_assoc()) !== null) {
+            $data[] = $row;
+        }
 
-    if ( @$data!==null) {
-        @$colNames = array_keys(reset($data));
+        if ( @$data!==null) {
+            @$colNames = array_keys(reset($data));
 
-        echo "<table class=table>";
-        echo "<thead>";
+            echo "<table class=table>";
+            echo "<thead>";
 
-        foreach ($colNames as $colName) {
-            if ($colName != "pkey1") {
-                if ($colName != "screenName") {
-                    echo "<th>$colName</th>";
-                }
-            }
-        };
-        echo "</thead>";
-        foreach ($data as $row) {
-            echo "<tr>";
             foreach ($colNames as $colName) {
                 if ($colName != "pkey1") {
                     if ($colName != "screenName") {
-                        echo "<td>" . $row[$colName] . "</td>";
+                        echo "<th>$colName</th>";
                     }
-
                 }
+            };
+            echo "</thead>";
+            foreach ($data as $row) {
+                echo "<tr>";
+                foreach ($colNames as $colName) {
+                    if ($colName != "pkey1") {
+                        if ($colName != "screenName") {
+                            echo "<td>" . $row[$colName] . "</td>";
+                        }
+
+                    }
+                }
+                echo "<td><a href=" . @$row['screenName'] . "_view.php?" . @$row['pkey1'] .">view</a>";
+
+
+                echo "</tr>";
             }
-            echo "<td><a href=" . @$row['screenName'] . "_view.php?" . @$row['pkey1'] .">view</a>";
-
-
-            echo "</tr>";
         }
+
+        mysqli_free_result($result);
+        $mysqli->close();
     }
-
-    mysqli_free_result($result);
-    $mysqli->close();
-
 }
 
 function getPublicHealthCenters(){
@@ -229,12 +243,3 @@ function getPublicHealthCenters(){
 
     return  $public_health_centers;
 }
-
-
-
-
-
-
-
-
-
