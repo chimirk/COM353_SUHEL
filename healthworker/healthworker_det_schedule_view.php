@@ -70,20 +70,20 @@ $screenData2=getBulkData($QueryToRun2);
                     <label for="schedule_date">
                         Schedule Date
                     </label>
-                    <input type="text" class="form-control" id="schedule_date" name ="schedule_date" value="<?php echo $screenData['schedule_date']?>" readonly/>
+                    <input type="date" class="form-control" id="schedule_date" name ="schedule_date" value="<?php echo $screenData['schedule_date']?>" readonly/>
                 </div>
                 <div class="form-group">
                     <label for="schedule_start_time">
                         Schedule Start Time
                     </label>
-                    <input type="text" class="form-control" id="schedule_start_time" name ="schedule_start_time"
+                    <input type="time" class="form-control" id="schedule_start_time" name ="schedule_start_time"
                            value="<?php echo $screenData['schedule_start']?>" placeholder="hh:mm" required/>
                 </div>
                 <div class="form-group">
                     <label for="schedule_end_time">
                         Schedule End Time
                     </label>
-                    <input type="text" class="form-control" id="schedule_end_time" name ="schedule_end_time"
+                    <input type="time" class="form-control" id="schedule_end_time" name ="schedule_end_time"
                            value="<?php echo $screenData['schedule_end']?>" placeholder="hh:mm" required/>
                 </div>
             </form>
