@@ -82,9 +82,11 @@ function create_new_schedule($person_id, $facility_name, $schedule_date)
     $result = $result->fetch_assoc();
     $facility_id = $result['facility_id'];
 
+    $schedule_start = e($_POST['schedule_start_time']);
+    $schedule_end = e($_POST['schedule_end_time']);
 
-    $query = "INSERT INTO `work_schedule` (`person_id`, `facility_id`, `schedule_date`) 
-                            VALUES ('$person_id', '$facility_id', '$schedule_date')";
+    $query = "INSERT INTO `work_schedule` (`person_id`, `facility_id`, `schedule_date`, `schedule_start`, `schedule_end`) 
+                            VALUES ('$person_id', '$facility_id', '$schedule_date', '$schedule_start', '$schedule_end')";
     $mysqli->query($query);
     $mysqli->close();
 
@@ -243,3 +245,4 @@ function getPublicHealthCenters(){
 
     return  $public_health_centers;
 }
+
