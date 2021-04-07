@@ -1,0 +1,3 @@
+    create or replace definer = root@localhost view main_projectv1.users_view as
+        select `p`.`medicare_number` AS `medicare_number`, `p`.`DOB` AS `DOB`
+    from `main_projectv1`.`person` `p`;
