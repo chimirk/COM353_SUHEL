@@ -48,6 +48,16 @@
         </div>
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="is_patient" name="is_patient" checked>
+                    <label class="form-check-label" >I am here for follow-up</label>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
                 <button type="submit" class="btn" name="register_btn">Register</button>
             </div>
         </div>

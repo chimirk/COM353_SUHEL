@@ -58,6 +58,16 @@ function register(){
         array_push($errors, "The two passwords do not match");
     }
 
+    if(isset($_POST['is_patient'])) {
+        $query = "SELECT * FROM users_view WHERE medicare_number = '$username' AND DOB = '$password_1'";
+        $result = $mysqli->query($query);
+        if($result != false) {
+            if($result->num_rows != 1) {   //user not found
+                array_push($errors, "No such Medicare-Number or Date-of-Birth in database. Please verify entered data.");
+            }
+        }
+    }
+
     // register user if there are no errors in the form
     if (count($errors) == 0) {
         $password = md5($password_1);//encrypt the password before saving in the database
