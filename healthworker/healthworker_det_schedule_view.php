@@ -77,10 +77,7 @@ $screenData2=getBulkData($QueryToRun2);
                         Schedule Start Time
                     </label>
                     <input type="time" class="form-control" id="schedule_start_time" name ="schedule_start_time"
-                           value="
-                           <?php
-                           echo $screenData['schedule_start']?>
-                " placeholder="hh:mm" required/>
+                           value="<?php echo $screenData['schedule_start']?>" placeholder="hh:mm" required/>
                 </div>
                 <div class="form-group">
                     <label for="schedule_end_time">
