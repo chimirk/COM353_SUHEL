@@ -230,6 +230,69 @@ FROM {$table_name}";
     }
 }
 
+if(isset($_POST['get_list_workers_by_facility'])) {
+    echo "Hellow World";
+}
+
+function displayWorkersByFacility($table_name){
+    if(isset($_POST['facility_name'])) {
+        $facility_name = $_POST['facility_name'];
+        global $mysqli;
+        $query = "SELECT COUNT(*) AS RowCnt FROM $table_name WHERE facility_name = '$facility_name'" ;
+        $result = mysqli_query($mysqli, $query);
+
+        if($result != false) {
+            $query = "SELECT 
+                `person_id`         AS  `ID`,
+                `first_name`        AS  `First Name`, 
+                `last_name`         AS  `Last Name`,
+                `is_health_worker`  AS  `Is Health Worker`, 
+                `pkey1`, `screenName`, `facility_name` AS `Facility Name`
+FROM {$table_name} WHERE facility_name = '$facility_name'";
+
+            $result = mysqli_query($mysqli, $query);
+
+            while (($row = $result->fetch_assoc()) !== null) {
+                $data[] = $row;
+            }
+
+            if ( @$data!==null) {
+                @$colNames = array_keys(reset($data));
+
+                echo "<table class=table>";
+                echo "<thead>";
+
+                foreach ($colNames as $colName) {
+                    if ($colName != "pkey1") {
+                        if ($colName != "screenName") {
+                            echo "<th>$colName</th>";
+                        }
+                    }
+                };
+                echo "</thead>";
+                foreach ($data as $row) {
+                    echo "<tr>";
+                    foreach ($colNames as $colName) {
+                        if ($colName != "pkey1") {
+                            if ($colName != "screenName") {
+                                echo "<td>" . $row[$colName] . "</td>";
+                            }
+                        }
+                    }
+                    echo "<td><a href=" . @$row['screenName'] . "_view.php?" . @$row['pkey1'] .">view</a>";
+
+
+                    echo "</tr>";
+                }
+            }
+
+            mysqli_free_result($result);
+            $mysqli->close();
+        }
+    }
+
+}
+
 function getPublicHealthCenters(){
     global $mysqli;
     $query = "SELECT facility_name from publichealthcenter";
