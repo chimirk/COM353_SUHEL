@@ -9,7 +9,7 @@ if (isset($_POST['create_new_schedule'])) {
     $schedule_date = e($_POST['schedule_date']);
 
     $person_id = create_new_schedule($person_id, $facility_name, $schedule_date);
-    $location ="/COM353/healthworker/healthworker_view.php?person_id=".$person_id;
+    $location ="/COM353_SUHEL/healthworker/healthworker_view.php?person_id=".$person_id;
     header("Location: " . "http://" . $_SERVER['HTTP_HOST'] . $location);
 }
 
@@ -68,7 +68,30 @@ function delete_schedule($person_id, $facility_id, $schedule_date)
     return $person_id;
 }
 
+function create_new_schedule($person_id, $facility_name, $schedule_date)
+{
+    echo "inside create";
+    global $mysqli;
+    echo $facility_name;
 
+    $query = "SELECT facility_id FROM publichealthcenter WHERE facility_name = '$facility_name'";
+    $result = mysqli_query($mysqli, $query);
+    if($result == false) {
+        die("Error");
+    }
+    $result = $result->fetch_assoc();
+    $facility_id = $result['facility_id'];
+
+    $schedule_start = e($_POST['schedule_start_time']);
+    $schedule_end = e($_POST['schedule_end_time']);
+
+    $query = "INSERT INTO `work_schedule` (`person_id`, `facility_id`, `schedule_date`, `schedule_start`, `schedule_end`) 
+                            VALUES ('$person_id', '$facility_id', '$schedule_date', '$schedule_start', '$schedule_end')";
+    $mysqli->query($query);
+    $mysqli->close();
+
+    return$person_id;
+}
 
 
 function displaySchedules($table_name, $id){
@@ -207,6 +230,69 @@ FROM {$table_name}";
     }
 }
 
+if(isset($_POST['get_list_workers_by_facility'])) {
+    echo "Hellow World";
+}
+
+function displayWorkersByFacility($table_name){
+    if(isset($_POST['facility_name'])) {
+        $facility_name = $_POST['facility_name'];
+        global $mysqli;
+        $query = "SELECT COUNT(*) AS RowCnt FROM $table_name WHERE facility_name = '$facility_name'" ;
+        $result = mysqli_query($mysqli, $query);
+
+        if($result != false) {
+            $query = "SELECT 
+                `person_id`         AS  `ID`,
+                `first_name`        AS  `First Name`, 
+                `last_name`         AS  `Last Name`,
+                `is_health_worker`  AS  `Is Health Worker`, 
+                `pkey1`, `screenName`, `facility_name` AS `Facility Name`
+FROM {$table_name} WHERE facility_name = '$facility_name'";
+
+            $result = mysqli_query($mysqli, $query);
+
+            while (($row = $result->fetch_assoc()) !== null) {
+                $data[] = $row;
+            }
+
+            if ( @$data!==null) {
+                @$colNames = array_keys(reset($data));
+
+                echo "<table class=table>";
+                echo "<thead>";
+
+                foreach ($colNames as $colName) {
+                    if ($colName != "pkey1") {
+                        if ($colName != "screenName") {
+                            echo "<th>$colName</th>";
+                        }
+                    }
+                };
+                echo "</thead>";
+                foreach ($data as $row) {
+                    echo "<tr>";
+                    foreach ($colNames as $colName) {
+                        if ($colName != "pkey1") {
+                            if ($colName != "screenName") {
+                                echo "<td>" . $row[$colName] . "</td>";
+                            }
+                        }
+                    }
+                    echo "<td><a href=" . @$row['screenName'] . "_view.php?" . @$row['pkey1'] .">view</a>";
+
+
+                    echo "</tr>";
+                }
+            }
+
+            mysqli_free_result($result);
+            $mysqli->close();
+        }
+    }
+
+}
+
 function getPublicHealthCenters(){
     global $mysqli;
     $query = "SELECT facility_name from publichealthcenter";
@@ -221,30 +307,4 @@ function getPublicHealthCenters(){
     //$mysqli->close();
 
     return  $public_health_centers;
-}
-
-function create_new_schedule($person_id, $facility_name, $schedule_date)
-{
-    echo "inside create";
-    global $mysqli;
-    echo $facility_name;
-
-    $query = "SELECT facility_id FROM publichealthcenter WHERE facility_name = '$facility_name'";
-    echo  $query;
-    $result = mysqli_query($mysqli, $query);
-    if($result == false) {
-        die("Error");
-    }
-    $result = $result->fetch_assoc();
-    $facility_id = $result['facility_id'];
-
-
-    $query = "INSERT INTO `work_schedule` (`person_id`, `facility_id`, `schedule_date`) 
-                            VALUES ('$person_id', '$facility_id', '$schedule_date')";
-
-    echo  $query;
-    $mysqli->query($query);
-    $mysqli->close();
-
-    return$person_id;
 }
