@@ -14,8 +14,10 @@ create or replace definer = root@localhost view main_projectv1.healthworker_rec_
        `p`.`last_name`                       AS `last_name`,
        `p`.`is_health_worker`                AS `is_health_worker`,
        concat('person_id=', `p`.`person_id`) AS `pkey1`,
-       'healthworker'                        AS `screenName`
-from `main_projectv1`.`person` `p`
+       'healthworker'                        AS `screenName`,
+       `phc`.`facility_name`                 AS `facility_name`
+from (`main_projectv1`.`person` `p`
+         join `main_projectv1`.`publichealthcenter` `phc` on (`p`.`facility_id` = `phc`.`facility_id`))
 where `p`.`is_health_worker` = 'yes';
 
 
