@@ -1,0 +1,59 @@
+function displaysSymptoms($table_name, $id){
+    global $mysqli;
+
+    $query = "SELECT COUNT(*) AS RowCnt FROM $table_name";
+    $result = mysqli_query($mysqli, $query);
+
+    if($result != false) {
+
+        $query = "SELECT 
+                    `date_reported`     AS      `DATE REPORTED`,
+                    `time_reported`     AS      `TIME REPORTED`,
+                    `symptoms`          AS      `SYMPTOM`,
+                    `person_id`
+                FROM {$table_name} 
+                WHERE `person_id` = '$id' 
+                order by `date_reported`";
+
+        $result = mysqli_query($mysqli, $query);
+
+
+        //$fields_num = mysqli_field_count($mysqli);
+
+        while (($row = $result->fetch_assoc()) !== null) {
+            $data[] = $row;
+        }
+
+        if (@$data !== null) {
+            @$colNames = array_keys(reset($data));
+
+            echo "<table class='table'>";
+            echo "<thead>";
+
+            foreach ($colNames as $colName) {
+                if ($colName != "person_id") {
+                    echo "<th>$colName</th>";
+                }
+            }
+
+
+
+            echo "</thead>";
+            foreach ($data as $row) {
+                echo "<tr>";
+                foreach ($colNames as $colName) {
+                    if ($colName != "person_id") {
+                        echo "<td>" . $row[$colName] . "</td>";
+                    }
+                }
+
+                echo "</tr>";
+            }
+        }
+
+        mysqli_free_result($result);
+        $mysqli->close();
+    }else{
+        echo "Nothing to display";
+    }
+}
