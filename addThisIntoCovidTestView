@@ -1,0 +1,12 @@
+<div style="margin-top: 30px">
+                        <h4>
+                            Reported Symptoms during 14 days follow up period.
+                        </h4>
+                        <table class="table">
+                            <?php
+                            $patient_id = $screenData['person_id'];
+                            $table_name = 'symptoms_det_table_view';
+                            displaysSymptoms($table_name, $patient_id);
+                            ?>
+                        </table>
+                    </div>
