@@ -1,0 +1,6 @@
+create or replace definer = qfc353_4@`172.16.0.0/255.240.0.0` view symptoms_det_table_view as
+	select `fad`.`person_id`     AS `person_id`,
+       `fad`.`date_reported` AS `date_reported`,
+       `fad`.`time_reported` AS `time_reported`,
+       `fad`.`symptoms`      AS `symptoms`
+from `qfc353_4`.`followup_details` `fad`;
