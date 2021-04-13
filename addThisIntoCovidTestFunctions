@@ -7,13 +7,14 @@ function displaysSymptoms($table_name, $id){
     if($result != false) {
 
         $query = "SELECT 
+                    `person_id`         AS      `ID`,
                     `date_reported`     AS      `DATE REPORTED`,
                     `time_reported`     AS      `TIME REPORTED`,
-                    `symptoms`          AS      `SYMPTOM`,
-                    `person_id`
+                    `symptoms`          AS      `SYMPTOM`,  
+                    `body_temp`         AS      `BODY TEMPERATURE`
+       
                 FROM {$table_name} 
-                WHERE `person_id` = '$id' 
-                order by `date_reported`";
+                ";
 
         $result = mysqli_query($mysqli, $query);
 
@@ -56,4 +57,17 @@ function displaysSymptoms($table_name, $id){
     }else{
         echo "Nothing to display";
     }
+}
+
+function getHealthWorkerNameById($hwid){
+    global $mysqli;
+    $query = "SELECT first_name, last_name FROM person WHERE person_id = '$hwid'";
+    if($mysqli->query($query) == true) {
+        $result = $mysqli->query($query);
+        $row = $result->fetch_assoc();
+        return $row['first_name']." ".$row['last_name'];
+    } else{
+        $mysqli->error(error_get_last());
+    }
+    $mysqli->close();
 }
