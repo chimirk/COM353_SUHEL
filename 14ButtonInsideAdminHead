@@ -1,0 +1,5 @@
+<form id="index" class="form-horizontal" method="post" action="../login.php">
+        <div>
+            <button class="btn btn-outline-primary" type="submit" form="index" name="logout">Logout</button>
+        </div>
+    </form>
