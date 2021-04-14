@@ -1,0 +1,41 @@
+<body>
+    <!-- notification message -->
+    <?php if (isset($_SESSION['success'])) : ?>
+        <div class="error success" >
+            <h4>
+                <?php
+                echo $_SESSION['success'];
+                unset($_SESSION['success']);
+                ?>
+            </h4>
+        </div>
+    <?php endif ?>
+<div class="myDiv">
+    <h2>COVID-19 Public Health Care System (C19PHCS)</h2>
+    <p>
+        <!-- logged in user information -->
+    <div class="profile_info" style="position: relative; top:0; right: 0; padding: 10px ">
+        <!--            <img src="../images/sys-admin-96.png"  >-->
+        <div>
+            <?php  if (isset($_SESSION['user'])) : ?>
+                <strong><?php echo $_SESSION['user']['username']; ?></strong>
+                <small>
+                    <i  style="color: #888;">(<?php echo ucfirst($_SESSION['user']['user_type']); ?>)</i>
+                    <br>
+                </small>
+                <div>
+                    <p>
+                        <a href="../admin/admin_header.php?logout='1'" class="btn btn-outline-secondary">
+                            <span class="glyphicon glyphicon-log-out"></span> Sign out</a>
+                    </p>
+
+                </div>
+            <?php endif ?>
+        </div>
+    </div>
+
+<!--        sign out-->
+
+    </p>
+</div>
+<div class="dropdown">
